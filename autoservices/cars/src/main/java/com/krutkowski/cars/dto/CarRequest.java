@@ -39,7 +39,7 @@ public class CarRequest {
     private int mileage;
 
     @Positive(message = "Power must be positive")
-    private String power;
+    private int power;
 
     @NotBlank(message = "Type cannot be empty")
     private String type;

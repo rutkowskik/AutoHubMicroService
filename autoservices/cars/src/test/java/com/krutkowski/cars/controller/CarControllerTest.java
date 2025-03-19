@@ -36,7 +36,7 @@ class CarControllerTest {
     @Test
     void saveCar200ForValidRequest() throws Exception {
         CarRequest carRequest = new CarRequest(1L, "BMW", "X5", "Title", "",
-                new BigDecimal("20.20"), 1999, 100_000, "150KM", "Kombi",
+                new BigDecimal("20.20"), 1999, 100_000, 150, "Kombi",
                 "Katowice", "", "black", "2000 cm3");
 
         mockMvc.perform(post("/api/v1/cars/save")

@@ -17,6 +17,17 @@ public class CarService {
                 .id(carRequest.getId())
                 .brand(carRequest.getBrand())
                 .model(carRequest.getModel())
+                .title(carRequest.getTitle())
+                .image(carRequest.getImage())
+                .price(carRequest.getPrice())
+                .year(carRequest.getYear())
+                .mileage(carRequest.getMileage())
+                .power(carRequest.getPower())
+                .type(carRequest.getType())
+                .location(carRequest.getLocation())
+                .flag(carRequest.getFlag())
+                .color(carRequest.getColor())
+                .engine(carRequest.getEngine())
                 .build();
         //todo add other properties
         carRepository.save(car);

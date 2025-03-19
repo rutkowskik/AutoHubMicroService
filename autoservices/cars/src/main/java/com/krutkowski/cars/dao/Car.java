@@ -1,10 +1,13 @@
 package com.krutkowski.cars.dao;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 
 @Data
 @Builder
@@ -23,18 +26,48 @@ public class Car {
             generator = "car_id_sequence"
     )
     private Long id;
+
+    @NotNull(message = "Brand is required.")
+    @Size(min = 1, max = 50, message = "Brand name must be between 1 and 50 characters.")
     private String brand;
+
+    @NotNull(message = "Model is required.")
+    @Size(min = 1, max = 50, message = "Model name must be between 1 and 50 characters.")
     private String model;
+
+    @NotNull(message = "Title is required.")
+    @Size(min = 1, max = 100, message = "Title name must be between 1 and 100 characters.")
     private String title;
+
     private String image;
-    private int price;
+
+    @NotNull(message = "Price is required.")
+    @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0.")
+    private BigDecimal price;
+
+    @Min(value = 1900, message = "Year must be after 1900.")
+    @Max(value = 2100, message = "Year must be before 2100.")
     private int year;
+
+    @Min(value = 0, message = "Mileage must be greater than or equal to 0.")
     private int mileage;
-    private String power;
+
+    @Min(value = 0, message = "Power must be greater than or equal to 0.")
+    private int power;
+
+    @NotNull(message = "Type is required.")
+    @Size(min = 1, max = 50, message = "Type must be between 1 and 50 characters.")
     private String type;
+
+    @NotNull(message = "Location is required.")
+    @Size(min = 1, max = 100, message = "Location must be between 1 and 100 characters.")
     private String location;
     private String flag;
+
+    @NotNull(message = "Color is required.")
     private String color;
+
+    @NotNull(message = "Engine is required.")
     private String engine;
 }
 
