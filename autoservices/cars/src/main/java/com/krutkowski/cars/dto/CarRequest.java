@@ -1,8 +1,6 @@
 package com.krutkowski.cars.dto;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,7 +27,9 @@ public class CarRequest {
 
     private String image;
 
-    @Positive(message = "Price must be positive")
+    @DecimalMin(value = "0.01", inclusive = true)
+    @Digits(integer = 10, fraction = 2)
+    @NotNull(message = "Price cannot be empty")
     private BigDecimal price;
 
     @Min(value = 1900, message = "Year must be greater than 1900")
@@ -53,5 +53,6 @@ public class CarRequest {
     private String color;
 
     @Positive(message = "Engine size must be positive")
+    @NotBlank(message = "Engine cannot be empty")
     private String engine;
 }

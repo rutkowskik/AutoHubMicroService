@@ -6,6 +6,8 @@ import com.krutkowski.cars.repository.CarRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @AllArgsConstructor
 public class CarService {
@@ -30,5 +32,9 @@ public class CarService {
                 .engine(carRequest.getEngine())
                 .build();
         carRepository.save(car);
+    }
+
+    public List<Car> getAllCars() {
+        return carRepository.findAll();
     }
 }
