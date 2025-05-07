@@ -4,9 +4,9 @@ import com.krutkowski.cars.dao.Car;
 import com.krutkowski.cars.dto.CarRequest;
 import com.krutkowski.cars.repository.CarRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -34,7 +34,11 @@ public class CarService {
         carRepository.save(car);
     }
 
-    public List<Car> getAllCars() {
-        return carRepository.findAll();
+    public Page<Car> getAllCars(Pageable page) {
+        return carRepository.findAll(page);
+    }
+
+    public Car getCarById(Long id) {
+        return carRepository.findById(id).orElse(null);
     }
 }

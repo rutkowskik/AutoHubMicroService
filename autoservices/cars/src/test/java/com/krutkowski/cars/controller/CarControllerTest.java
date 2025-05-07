@@ -9,6 +9,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -31,10 +35,19 @@ class CarControllerTest {
     private CarService carService;
 
     private ObjectMapper objectMapper;
+    List<Car> cars;
 
     @BeforeEach
     void setUp() {
         objectMapper = new ObjectMapper();
+         cars = List.of(
+                new Car(1L, "BMW", "X5", "Title", "",
+                        new BigDecimal("20.20"), 1999, 100_000, 150, "Kombi",
+                        "Katowice", "", "black", "2000"),
+                new Car(2L, "AUDI", "Q3", "Title", "",
+                        new BigDecimal("20.20"), 1999, 100_000, 150, "Kombi",
+                        "Katowice", "", "black", "2000")
+        );
     }
 
     @Test
@@ -65,32 +78,39 @@ class CarControllerTest {
 
     @Test
     void getAllCars() throws Exception {
-        mockMvc.perform(get("/api/v1/cars/all")
+        Pageable pageRequest = PageRequest.of(0, 1);
+        Page<Car> page = new PageImpl<>(cars, pageRequest, cars.size());
+        mockMvc.perform(get("/api/v1/cars")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
-        verify(carService, times(1)).getAllCars();
+        verify(carService, times(1)).getAllCars(any(Pageable.class));
     }
 
     @Test
     void shouldReturnAllCars() throws Exception {
         // given
+        Pageable pageRequest = PageRequest.of(0, 10);
         List<Car> cars = List.of(
                 new Car(1L, "BMW", "X5", "Title", "",
                         new BigDecimal("20.20"), 1999, 100_000, 150, "Kombi",
-                        "Katowice", "", "black", "2000 cm3"),
+                        "Katowice", "", "black", "2000"),
                 new Car(2L, "AUDI", "Q3", "Title", "",
                         new BigDecimal("20.20"), 1999, 100_000, 150, "Kombi",
-                        "Katowice", "", "black", "2000 cm3")
+                        "Katowice", "", "black", "2000")
         );
-        when(carService.getAllCars()).thenReturn(cars);
+        Page<Car> page = new PageImpl<>(cars, pageRequest, cars.size());
+        when(carService.getAllCars(any(Pageable.class))).thenReturn(page);
 
-        // when & then
-        mockMvc.perform(get("/api/v1/cars"))
+
+        mockMvc.perform(get("/api/v1/cars")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()").value(2))
-                .andExpect(jsonPath("$[0].brand").value("BMW"))
-                .andExpect(jsonPath("$[1].model").value("Q3"));
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.content[0].brand").value("BMW"))
+                .andExpect(jsonPath("$.content[1].model").value("Q3"));
     }
 
 }
