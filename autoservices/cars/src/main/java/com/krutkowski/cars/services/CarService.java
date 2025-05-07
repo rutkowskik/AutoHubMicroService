@@ -29,7 +29,6 @@ public class CarService {
                 .color(carRequest.getColor())
                 .engine(carRequest.getEngine())
                 .build();
-        //todo add other properties
         carRepository.save(car);
     }
 }
