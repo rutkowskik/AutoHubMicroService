@@ -1,8 +1,8 @@
 package com.krutkowski.cars.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.krutkowski.cars.dao.Car;
-import com.krutkowski.cars.dto.CarRequest;
+import com.krutkowski.cars.model.entity.Car;
+import com.krutkowski.cars.model.request.CarRequest;
 import com.krutkowski.cars.services.CarService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
@@ -43,10 +44,10 @@ class CarControllerTest {
          cars = List.of(
                 new Car(1L, "BMW", "X5", "Title", "",
                         new BigDecimal("20.20"), 1999, 100_000, 150, "Kombi",
-                        "Katowice", "", "black", "2000"),
+                        "Katowice", "", "black", "2000", new Date(), new Date()),
                 new Car(2L, "AUDI", "Q3", "Title", "",
                         new BigDecimal("20.20"), 1999, 100_000, 150, "Kombi",
-                        "Katowice", "", "black", "2000")
+                        "Katowice", "", "black", "2000", new Date(), new Date())
         );
     }
 
@@ -78,8 +79,8 @@ class CarControllerTest {
 
     @Test
     void getAllCars() throws Exception {
-        Pageable pageRequest = PageRequest.of(0, 1);
-        Page<Car> page = new PageImpl<>(cars, pageRequest, cars.size());
+//        Pageable pageRequest = PageRequest.of(0, 1);
+//        Page<Car> page = new PageImpl<>(cars, pageRequest, cars.size());
         mockMvc.perform(get("/api/v1/cars")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -94,10 +95,10 @@ class CarControllerTest {
         List<Car> cars = List.of(
                 new Car(1L, "BMW", "X5", "Title", "",
                         new BigDecimal("20.20"), 1999, 100_000, 150, "Kombi",
-                        "Katowice", "", "black", "2000"),
+                        "Katowice", "", "black", "2000", new Date(), new Date()),
                 new Car(2L, "AUDI", "Q3", "Title", "",
                         new BigDecimal("20.20"), 1999, 100_000, 150, "Kombi",
-                        "Katowice", "", "black", "2000")
+                        "Katowice", "", "black", "2000", new Date(), new Date())
         );
         Page<Car> page = new PageImpl<>(cars, pageRequest, cars.size());
         when(carService.getAllCars(any(Pageable.class))).thenReturn(page);
@@ -111,6 +112,11 @@ class CarControllerTest {
                 .andExpect(jsonPath("$.content.length()").value(2))
                 .andExpect(jsonPath("$.content[0].brand").value("BMW"))
                 .andExpect(jsonPath("$.content[1].model").value("Q3"));
+    }
+
+    @Test
+    public void test() {
+
     }
 
 }
