@@ -1,4 +1,4 @@
-package com.krutkowski.cars.dto;
+package com.krutkowski.cars.model.request;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -27,7 +27,7 @@ public class CarRequest {
 
     private String image;
 
-    @DecimalMin(value = "0.01", inclusive = true)
+    @DecimalMin(value = "0.01")
     @Digits(integer = 10, fraction = 2)
     @NotNull(message = "Price cannot be empty")
     private BigDecimal price;

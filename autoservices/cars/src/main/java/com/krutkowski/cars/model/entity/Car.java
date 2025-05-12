@@ -1,4 +1,4 @@
-package com.krutkowski.cars.dao;
+package com.krutkowski.cars.model.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Data
 @Builder
@@ -69,5 +70,11 @@ public class Car {
 
     @NotNull(message = "Engine is required.")
     private String engine;
+
+    @NotNull
+    private Date created;
+
+    @NotNull
+    private Date modified;
 }
 

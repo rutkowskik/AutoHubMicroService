@@ -1,7 +1,9 @@
 package com.krutkowski.cars.services;
 
-import com.krutkowski.cars.dao.Car;
-import com.krutkowski.cars.dto.CarRequest;
+import com.krutkowski.cars.model.dto.CarDTO;
+import com.krutkowski.cars.model.entity.Car;
+import com.krutkowski.cars.model.mapper.CarMapper;
+import com.krutkowski.cars.model.request.CarRequest;
 import com.krutkowski.cars.repository.CarRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 public class CarService {
 
     private final CarRepository carRepository;
+    private final CarMapper carMapper;
 
     public void saveCar(CarRequest carRequest) {
         Car car = Car.builder()
@@ -38,7 +41,7 @@ public class CarService {
         return carRepository.findAll(page);
     }
 
-    public Car getCarById(Long id) {
-        return carRepository.findById(id).orElse(null);
+    public CarDTO getCarById(Long id) {
+        return carMapper.toDto(carRepository.findById(id).orElseThrow());
     }
 }
