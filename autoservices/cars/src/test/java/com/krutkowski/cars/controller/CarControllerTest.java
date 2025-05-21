@@ -116,7 +116,7 @@ class CarControllerTest {
 
     @Test
     public void test() {
-
+        //todo test metody do aktualizowania wpisu
     }
 
 }

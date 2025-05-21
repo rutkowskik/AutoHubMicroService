@@ -71,10 +71,13 @@ public class Car {
     @NotNull(message = "Engine is required.")
     private String engine;
 
-    @NotNull
+
     private Date created;
 
-    @NotNull
+    //todo jakie dodatkowe walidacje - not null default timestamp, update zawsze przy zmianie statusu
+
     private Date modified;
+
+    //todo active status
 }
 
