@@ -12,6 +12,7 @@ import com.krutkowski.cars.model.mapper.CarMapper;
 import com.krutkowski.cars.model.request.CarRequest;
 import com.krutkowski.cars.repository.CarRepository;
 import com.krutkowski.cars.repository.FileRepo;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.data.domain.Page;
@@ -40,6 +41,26 @@ public class CarService {
                 .model(carRequest.getModel())
                 .title(carRequest.getTitle())
                 .image(carRequest.getImage())
+                .price(carRequest.getPrice())
+                .year(carRequest.getYear())
+                .mileage(carRequest.getMileage())
+                .power(carRequest.getPower())
+                .type(carRequest.getType())
+                .location(carRequest.getLocation())
+                .flag(carRequest.getFlag())
+                .color(carRequest.getColor())
+                .engine(carRequest.getEngine())
+                .build();
+        carRepository.save(car);
+    }
+
+    public void saveCar(CarRequest carRequest, String fileUrl) {
+        Car car = Car.builder()
+                .id(carRequest.getId())
+                .brand(carRequest.getBrand())
+                .model(carRequest.getModel())
+                .title(carRequest.getTitle())
+                .image(fileUrl)
                 .price(carRequest.getPrice())
                 .year(carRequest.getYear())
                 .mileage(carRequest.getMileage())
@@ -98,4 +119,9 @@ public class CarService {
         }
     }
 
+    public void saveCarWithFiles(@Valid CarRequest carRequest, MultipartFile file) {
+        String fileUrl = saveFile(file).getFileUrl();
+        saveCar(carRequest, fileUrl);
+
+    }
 }

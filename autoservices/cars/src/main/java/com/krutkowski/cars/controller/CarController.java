@@ -12,6 +12,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -68,6 +69,16 @@ public class CarController {
         files.forEach(file -> savedFiles.add(carService.saveFile(file)));
 
         return ResponseEntity.ok(savedFiles);
+    }
+
+    @PostMapping(value = "/save/images/data", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> saveCarWithFiles(
+            @RequestPart("car") @Valid CarRequest carRequest,
+            @RequestPart("files") MultipartFile file) {
+
+        log.info("Saving car {}", carRequest);
+        carService.saveCarWithFiles(carRequest, file);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
 }
