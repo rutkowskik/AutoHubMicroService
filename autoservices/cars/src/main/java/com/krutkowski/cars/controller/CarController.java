@@ -2,17 +2,22 @@ package com.krutkowski.cars.controller;
 
 import com.krutkowski.cars.model.entity.Car;
 import com.krutkowski.cars.model.dto.CarDTO;
+import com.krutkowski.cars.model.entity.File;
 import com.krutkowski.cars.model.request.CarRequest;
 import com.krutkowski.cars.services.CarService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -53,12 +58,16 @@ public class CarController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @PostMapping("/save/image")
-    public ResponseEntity<?> saveImage(@RequestParam("file") MultipartFile file, @RequestParam(required = false, value = "name") String name){
-        if (file.isEmpty() || name.isEmpty()){
-            return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File and Name are required");
+    @PostMapping("/save/images")
+    public ResponseEntity<?> saveImages(@RequestParam("files") List<MultipartFile> files){
+        if (files == null || files.isEmpty()){
+            return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File list is empty");
         }
-        return ResponseEntity.ok(carService.saveFile(file, name));
+        List<File> savedFiles = new ArrayList<>();
+
+        files.forEach(file -> savedFiles.add(carService.saveFile(file)));
+
+        return ResponseEntity.ok(savedFiles);
     }
 
 }

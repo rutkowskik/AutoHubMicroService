@@ -4,6 +4,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.krutkowski.cars.config.AwsS3Config;
+import com.krutkowski.cars.model.dto.AwsS3SaveImageModel;
 import com.krutkowski.cars.model.dto.CarDTO;
 import com.krutkowski.cars.model.entity.Car;
 import com.krutkowski.cars.model.entity.File;
@@ -60,7 +61,17 @@ public class CarService {
         return carMapper.toDto(carRepository.findById(id).orElseThrow());
     }
 
-    private String saveImageToAWS(MultipartFile file) {
+    public File saveFile(MultipartFile file) {
+        AwsS3SaveImageModel savedModel = saveImageToAWS(file);
+
+        File fileToSave = File.builder()
+                .fileUrl(savedModel.awsUrl())
+                .name(savedModel.fileName())
+                .build();
+        return fileRepository.save(fileToSave);
+    }
+
+    private AwsS3SaveImageModel saveImageToAWS(MultipartFile file) {
         try {
             String extension = FilenameUtils.getExtension(file.getOriginalFilename());
             if (extension != null && !List.of("jpg", "jpeg", "png", "gif").contains(extension.toLowerCase())) {
@@ -77,21 +88,14 @@ public class CarService {
             PutObjectRequest putObjectRequest = new PutObjectRequest(amazonS3Config.getBucketName(), fileName, inputStream, objectMetadata);
             amazonS3Client.putObject(putObjectRequest);
 
-            return String.format("https://%s.s3.amazonaws.com/%s",
+            String awsUrl = String.format("https://%s.s3.amazonaws.com/%s",
                     amazonS3Config.getBucketName(),
                     fileName);
+
+            return new AwsS3SaveImageModel(awsUrl, fileName);
         } catch (Exception e) {
             throw new RuntimeException("Failed to upload file to server", e);
         }
     }
 
-    public File saveFile(MultipartFile file, String name) {
-        String saveFileURl = saveImageToAWS(file);
-
-        File fileToSave = File.builder()
-                .fileUrl(saveFileURl)
-                .name(name)
-                .build();
-        return fileRepository.save(fileToSave);
-    }
 }
