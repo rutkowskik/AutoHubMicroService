@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -50,6 +51,14 @@ public class CarController {
         log.info("Updating car {}", carRequest);
         carService.saveCar(carRequest);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PostMapping("/save/image")
+    public ResponseEntity<?> saveImage(@RequestParam("file") MultipartFile file, @RequestParam(required = false, value = "name") String name){
+        if (file.isEmpty() || name.isEmpty()){
+            return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File and Name are required");
+        }
+        return ResponseEntity.ok(carService.saveFile(file, name));
     }
 
 }
