@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -33,11 +34,14 @@ public class CarController {
 
     //todo implement active_state not the delete method
 
-    @GetMapping
-    public Page<Car> getAllCars(Pageable page) {
-        log.info("Getting all cars");
-        return carService.getAllCars(page);
+    @GetMapping()
+    public Page<CarDTO> getFilteredCars(
+            @RequestParam Map<String, String> filters,
+            @RequestParam ("page") int page,
+            @RequestParam ("size") int size) {
+        return carService.getFilteredCars(filters, page, size);
     }
+
 
     @GetMapping("/{id}")
     public CarDTO getCarById(@PathVariable("id") Long id) {

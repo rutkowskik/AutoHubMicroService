@@ -12,16 +12,27 @@ import com.krutkowski.cars.model.mapper.CarMapper;
 import com.krutkowski.cars.model.request.CarRequest;
 import com.krutkowski.cars.repository.CarRepository;
 import com.krutkowski.cars.repository.FileRepo;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -33,6 +44,9 @@ public class CarService {
     private final CarMapper carMapper;
     private final AmazonS3 amazonS3Client;
     private final AwsS3Config amazonS3Config;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public void saveCar(CarRequest carRequest) {
         Car car = Car.builder()
@@ -124,4 +138,67 @@ public class CarService {
         saveCar(carRequest, fileUrl);
 
     }
+
+    public Page<CarDTO> getFilteredCars(Map<String, String> filters, int page, int size) {
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+
+        // Główne zapytanie
+        CriteriaQuery<Car> cq = cb.createQuery(Car.class);
+        Root<Car> car = cq.from(Car.class);
+
+        List<Predicate> predicatesForQuery = new ArrayList<>();
+
+        if (filters.containsKey("brand")) {
+            predicatesForQuery.add(cb.equal(cb.lower(car.get("brand")), filters.get("brand").toLowerCase()));
+        }
+        if (filters.containsKey("model")) {
+            predicatesForQuery.add(cb.equal(cb.lower(car.get("model")), filters.get("model").toLowerCase()));
+        }
+        if (filters.containsKey("priceFrom")) {
+            predicatesForQuery.add(cb.ge(car.get("price"), Integer.parseInt(filters.get("priceFrom"))));
+        }
+        if (filters.containsKey("priceTo")) {
+            predicatesForQuery.add(cb.le(car.get("price"), Integer.parseInt(filters.get("priceTo"))));
+        }
+
+        cq.where(cb.and(predicatesForQuery.toArray(new Predicate[0])));
+
+        TypedQuery<Car> query = entityManager.createQuery(cq);
+        query.setFirstResult(page * size);
+        query.setMaxResults(size);
+
+        List<Car> carEntities = query.getResultList();
+
+        // Mapowanie encji na DTO
+        List<CarDTO> carDTOs = carEntities.stream()
+                .map(carMapper::toDto)
+                .toList();
+
+        // Liczenie totalu – stwórz **nową listę predykatów i Root** dla osobnego zapytania!
+        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+        Root<Car> countRoot = countQuery.from(Car.class);
+
+        List<Predicate> predicatesForCount = new ArrayList<>();
+
+        if (filters.containsKey("brand")) {
+            predicatesForCount.add(cb.equal(countRoot.get("brand"), filters.get("brand")));
+        }
+        if (filters.containsKey("model")) {
+            predicatesForCount.add(cb.equal(countRoot.get("model"), filters.get("model")));
+        }
+        if (filters.containsKey("priceFrom")) {
+            predicatesForCount.add(cb.ge(countRoot.get("price"), Integer.parseInt(filters.get("priceFrom"))));
+        }
+        if (filters.containsKey("priceTo")) {
+            predicatesForCount.add(cb.le(countRoot.get("price"), Integer.parseInt(filters.get("priceTo"))));
+        }
+
+        countQuery.select(cb.count(countRoot));
+        countQuery.where(cb.and(predicatesForCount.toArray(new Predicate[0])));
+
+        Long total = entityManager.createQuery(countQuery).getSingleResult();
+
+        return new PageImpl<>(carDTOs, PageRequest.of(page, size), total);
+    }
+
 }
