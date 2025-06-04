@@ -139,7 +139,7 @@ public class CarService {
 
     }
 
-    public Page<CarDTO> getFilteredCars(Map<String, String> filters, int page, int size) {
+    public Page<CarDTO> getFilteredCars(Map<String, String> filters, int pageNumber, int pageSize) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 
         // Główne zapytanie
@@ -164,41 +164,19 @@ public class CarService {
         cq.where(cb.and(predicatesForQuery.toArray(new Predicate[0])));
 
         TypedQuery<Car> query = entityManager.createQuery(cq);
-        query.setFirstResult(page * size);
-        query.setMaxResults(size);
 
         List<Car> carEntities = query.getResultList();
 
+        int total = carEntities.size();
         // Mapowanie encji na DTO
+        int first = pageNumber * pageSize;
         List<CarDTO> carDTOs = carEntities.stream()
                 .map(carMapper::toDto)
+                .skip(first)
+                .limit(first + pageSize)
                 .toList();
 
-        // Liczenie totalu – stwórz **nową listę predykatów i Root** dla osobnego zapytania!
-        CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
-        Root<Car> countRoot = countQuery.from(Car.class);
-
-        List<Predicate> predicatesForCount = new ArrayList<>();
-
-        if (filters.containsKey("brand")) {
-            predicatesForCount.add(cb.equal(countRoot.get("brand"), filters.get("brand")));
-        }
-        if (filters.containsKey("model")) {
-            predicatesForCount.add(cb.equal(countRoot.get("model"), filters.get("model")));
-        }
-        if (filters.containsKey("priceFrom")) {
-            predicatesForCount.add(cb.ge(countRoot.get("price"), Integer.parseInt(filters.get("priceFrom"))));
-        }
-        if (filters.containsKey("priceTo")) {
-            predicatesForCount.add(cb.le(countRoot.get("price"), Integer.parseInt(filters.get("priceTo"))));
-        }
-
-        countQuery.select(cb.count(countRoot));
-        countQuery.where(cb.and(predicatesForCount.toArray(new Predicate[0])));
-
-        Long total = entityManager.createQuery(countQuery).getSingleResult();
-
-        return new PageImpl<>(carDTOs, PageRequest.of(page, size), total);
+        return new PageImpl<>(carDTOs, PageRequest.of(pageNumber, pageSize), total);
     }
 
 }
