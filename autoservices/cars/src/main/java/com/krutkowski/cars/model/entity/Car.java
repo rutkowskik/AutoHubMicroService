@@ -71,6 +71,9 @@ public class Car {
     @NotNull(message = "Engine is required.")
     private String engine;
 
+    @NotNull(message = "Fuel type is required.")
+    private String fuelType;
+
 
     private Date created;
 
