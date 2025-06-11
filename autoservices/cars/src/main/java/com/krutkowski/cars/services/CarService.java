@@ -215,4 +215,8 @@ public class CarService {
         return new PageImpl<>(carDTOs, PageRequest.of(pageNumber, pageSize), total);
     }
 
+    public List<String> findDistinctModelsByBrandIgnoreCase(String brand) {
+        return carRepository.findDistinctModelsByBrandIgnoreCase(brand);
+    }
+
 }

@@ -85,4 +85,9 @@ public class CarController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @GetMapping("/models")
+    public List<String> getModelsByBrand(@RequestParam("brand") String brand) {
+        return carService.findDistinctModelsByBrandIgnoreCase(brand);
+    }
+
 }
