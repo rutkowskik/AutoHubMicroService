@@ -154,11 +154,47 @@ public class CarService {
         if (filters.containsKey("model")) {
             predicatesForQuery.add(cb.equal(cb.lower(car.get("model")), filters.get("model").toLowerCase()));
         }
+        if (filters.containsKey("title")) {
+            predicatesForQuery.add(cb.like(cb.lower(car.get("title")), filters.get("title").toLowerCase()));
+        }
         if (filters.containsKey("priceFrom")) {
             predicatesForQuery.add(cb.ge(car.get("price"), Integer.parseInt(filters.get("priceFrom"))));
         }
         if (filters.containsKey("priceTo")) {
             predicatesForQuery.add(cb.le(car.get("price"), Integer.parseInt(filters.get("priceTo"))));
+        }
+        if (filters.containsKey("yearFrom")) {
+            predicatesForQuery.add(cb.ge(car.get("price"), Integer.parseInt(filters.get("yearFrom"))));
+        }
+        if (filters.containsKey("yearTo")) {
+            predicatesForQuery.add(cb.le(car.get("year"), Integer.parseInt(filters.get("yearTo"))));
+        }
+        if (filters.containsKey("mileageFrom")) {
+            predicatesForQuery.add(cb.ge(car.get("mileage"), Integer.parseInt(filters.get("mileageFrom"))));
+        }
+        if (filters.containsKey("mileageTo")) {
+            predicatesForQuery.add(cb.le(car.get("mileage"), Integer.parseInt(filters.get("mileageTo"))));
+        }
+        if (filters.containsKey("powerFrom")) {
+            predicatesForQuery.add(cb.ge(car.get("power"), Integer.parseInt(filters.get("powerFrom"))));
+        }
+        if (filters.containsKey("powerTo")) {
+            predicatesForQuery.add(cb.le(car.get("power"), Integer.parseInt(filters.get("powerTo"))));
+        }
+        if (filters.containsKey("engineCapacityFrom")) {
+            predicatesForQuery.add(cb.ge(car.get("engine"), Integer.parseInt(filters.get("engineCapacityFrom"))));
+        }
+        if (filters.containsKey("engineCapacityTo")) {
+            predicatesForQuery.add(cb.le(car.get("engine"), Integer.parseInt(filters.get("engineCapacityTo"))));
+        }
+        if (filters.containsKey("bodyType")) {
+            predicatesForQuery.add(cb.equal(cb.lower(car.get("type")), filters.get("bodyType").toLowerCase()));
+        }
+        if (filters.containsKey("originCountry")) {
+            predicatesForQuery.add(cb.equal(cb.lower(car.get("location")), filters.get("originCountry").toLowerCase()));
+        }
+        if (filters.containsKey("color")) {
+            predicatesForQuery.add(cb.equal(cb.lower(car.get("color")), filters.get("color").toLowerCase()));
         }
 
         cq.where(cb.and(predicatesForQuery.toArray(new Predicate[0])));
