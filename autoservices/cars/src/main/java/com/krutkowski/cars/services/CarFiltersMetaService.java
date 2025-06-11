@@ -3,7 +3,7 @@ package com.krutkowski.cars.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.EntityManager;
+import com.krutkowski.cars.repository.CarRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,21 +15,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CarFiltersMetaService {
 
-    private final EntityManager entityManager;
+//    private final EntityManager entityManager;
+    private final CarRepository carRepository;
     private final ObjectMapper objectMapper;
 
     public Map<String, List<String>> getFiltersMeta() {
-        Object[] result = (Object[]) entityManager
-                .createNativeQuery("""
-                    SELECT 
-                        json_agg(DISTINCT brand),
-                        json_agg(DISTINCT location),
-                        json_agg(DISTINCT type),
-                        json_agg(DISTINCT color),
-                        json_agg(DISTINCT fuel_type)
-                    FROM car
-                """)
-                .getSingleResult();
+        Object[] result = carRepository.getCarFiltersMetaRaw();
 
         try {
             Map<String, List<String>> filters = new HashMap<>();

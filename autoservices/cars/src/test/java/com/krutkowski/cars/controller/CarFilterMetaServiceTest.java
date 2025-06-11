@@ -1,9 +1,8 @@
 package com.krutkowski.cars.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.krutkowski.cars.repository.CarRepository;
 import com.krutkowski.cars.services.CarFiltersMetaService;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,24 +14,22 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CarFiltersMetaServiceTest {
 
     @Mock
-    EntityManager entityManager;
+    private CarRepository carRepository;
 
     @InjectMocks
-    CarFiltersMetaService service;
+    private CarFiltersMetaService service;
 
-    ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @BeforeEach
     void setup() {
-        service = new CarFiltersMetaService(entityManager, objectMapper);
+        service = new CarFiltersMetaService(carRepository, objectMapper);
     }
 
     @Test
@@ -40,19 +37,20 @@ class CarFiltersMetaServiceTest {
         String brandsJson = "[\"Audi\",\"BMW\"]";
         String originsJson = "[\"Germany\",\"USA\"]";
         String bodiesJson = "[\"SUV\",\"Hatchback\"]";
+        String colorsJson = "[\"Black\",\"White\"]";
+        String fuelsJson = "[\"Diesel\",\"Petrol\"]";
 
-        Object[] queryResult = {brandsJson, originsJson, bodiesJson};
+        Object[] queryResult = {brandsJson, originsJson, bodiesJson, colorsJson, fuelsJson};
 
-        Query mockQuery = mock(Query.class);
-        when(entityManager.createNativeQuery(anyString())).thenReturn(mockQuery);
-        when(mockQuery.getSingleResult()).thenReturn(queryResult);
+        when(carRepository.getCarFiltersMetaRaw()).thenReturn(queryResult);
 
         Map<String, List<String>> result = service.getFiltersMeta();
 
-        assertThat(result).containsKeys("brands", "originCountries", "bodyTypes");
+        assertThat(result).containsKeys("brands", "originCountries", "bodyTypes", "colors", "fuelTypes");
         assertThat(result.get("brands")).containsExactly("Audi", "BMW");
         assertThat(result.get("originCountries")).containsExactly("Germany", "USA");
         assertThat(result.get("bodyTypes")).containsExactly("SUV", "Hatchback");
+        assertThat(result.get("colors")).containsExactly("Black", "White");
+        assertThat(result.get("fuelTypes")).containsExactly("Diesel", "Petrol");
     }
 }
-

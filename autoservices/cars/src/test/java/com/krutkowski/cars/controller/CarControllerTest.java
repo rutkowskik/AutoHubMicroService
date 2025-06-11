@@ -44,10 +44,10 @@ class CarControllerTest {
          cars = List.of(
                 new Car(1L, "BMW", "X5", "Title", "",
                         new BigDecimal("20.20"), 1999, 100_000, 150, "Kombi",
-                        "Katowice", "", "black", "2000", new Date(), new Date()),
+                        "Katowice", "", "black", "2000", "Gasoline", new Date(), new Date()),
                 new Car(2L, "AUDI", "Q3", "Title", "",
                         new BigDecimal("20.20"), 1999, 100_000, 150, "Kombi",
-                        "Katowice", "", "black", "2000", new Date(), new Date())
+                        "Katowice", "", "black", "2000", "Diesel", new Date(), new Date())
         );
     }
 
@@ -95,10 +95,10 @@ class CarControllerTest {
         List<Car> cars = List.of(
                 new Car(1L, "BMW", "X5", "Title", "",
                         new BigDecimal("20.20"), 1999, 100_000, 150, "Kombi",
-                        "Katowice", "", "black", "2000", new Date(), new Date()),
+                        "Katowice", "", "black", "2000", "Gasoline",new Date(), new Date()),
                 new Car(2L, "AUDI", "Q3", "Title", "",
                         new BigDecimal("20.20"), 1999, 100_000, 150, "Kombi",
-                        "Katowice", "", "black", "2000", new Date(), new Date())
+                        "Katowice", "", "black", "2000","Diesel", new Date(), new Date())
         );
         Page<Car> page = new PageImpl<>(cars, pageRequest, cars.size());
         when(carService.getAllCars(any(Pageable.class))).thenReturn(page);

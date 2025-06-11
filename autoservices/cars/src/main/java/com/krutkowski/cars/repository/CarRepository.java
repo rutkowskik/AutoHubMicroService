@@ -13,4 +13,14 @@ public interface CarRepository extends JpaRepository<Car, Long> {
     List<String> findDistinctModelsByBrandIgnoreCase(@Param("brand") String brand);
 
 
+    @Query(value = """
+        SELECT 
+            json_agg(DISTINCT brand),
+            json_agg(DISTINCT location),
+            json_agg(DISTINCT type),
+            json_agg(DISTINCT color),
+            json_agg(DISTINCT fuel_type)
+        FROM car
+        """, nativeQuery = true)
+    Object[] getCarFiltersMetaRaw();
 }
