@@ -15,7 +15,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CarFiltersMetaService {
 
-//    private final EntityManager entityManager;
     private final CarRepository carRepository;
     private final ObjectMapper objectMapper;
 
@@ -33,6 +32,10 @@ public class CarFiltersMetaService {
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("Failed to parse filters JSON", e);
         }
+    }
+
+    public List<String> findDistinctModelsByBrandIgnoreCase(String brand) {
+        return carRepository.findDistinctModelsByBrandIgnoreCase(brand);
     }
 }
 

@@ -35,32 +35,41 @@ public class CarController {
     //todo implement active_state not the delete method
 
     @GetMapping()
-    public Page<CarDTO> getFilteredCars(
+    public Page<CarDTO> getAllCars(
             @RequestParam Map<String, String> filters,
             @RequestParam ("page") int page,
             @RequestParam ("size") int size) {
         return carService.getFilteredCars(filters, page, size);
     }
 
-
     @GetMapping("/{id}")
-    public CarDTO getCarById(@PathVariable("id") Long id) {
+    public CarDTO getCarDetailsById(@PathVariable("id") Long id) {
         log.info("Getting car by id {}", id);
         return carService.getCarById(id);
     }
 
     @PostMapping("/save")
-    public ResponseEntity<?> saveCar(@Valid @RequestBody CarRequest carRequest) {
-        log.info("Saving car {}", carRequest);
+    public ResponseEntity<?> saveCarWithoutImage(@Valid @RequestBody CarRequest carRequest) {
+        log.info("Saving car without images {}", carRequest);
         carService.saveCar(carRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateCar(@Valid @RequestBody CarRequest carRequest) {
+    public ResponseEntity<?> updateCarWithoutImage(@Valid @RequestBody CarRequest carRequest) {
         log.info("Updating car {}", carRequest);
         carService.saveCar(carRequest);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PostMapping(value = "/save/images/data", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> saveCarWithImages(
+            @RequestPart("car") @Valid CarRequest carRequest,
+            @RequestPart("files") MultipartFile file) {
+
+        log.info("Saving car with images{}", carRequest);
+        carService.saveCarWithFiles(carRequest, file);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/save/images")
@@ -73,21 +82,6 @@ public class CarController {
         files.forEach(file -> savedFiles.add(carService.saveFile(file)));
 
         return ResponseEntity.ok(savedFiles);
-    }
-
-    @PostMapping(value = "/save/images/data", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> saveCarWithFiles(
-            @RequestPart("car") @Valid CarRequest carRequest,
-            @RequestPart("files") MultipartFile file) {
-
-        log.info("Saving car {}", carRequest);
-        carService.saveCarWithFiles(carRequest, file);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    @GetMapping("/models")
-    public List<String> getModelsByBrand(@RequestParam("brand") String brand) {
-        return carService.findDistinctModelsByBrandIgnoreCase(brand);
     }
 
 }

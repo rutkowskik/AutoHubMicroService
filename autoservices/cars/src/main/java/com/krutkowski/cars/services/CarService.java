@@ -11,7 +11,7 @@ import com.krutkowski.cars.model.entity.File;
 import com.krutkowski.cars.model.mapper.CarMapper;
 import com.krutkowski.cars.model.request.CarRequest;
 import com.krutkowski.cars.repository.CarRepository;
-import com.krutkowski.cars.repository.FileRepo;
+import com.krutkowski.cars.repository.ImageRepo;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -40,7 +40,7 @@ import java.util.UUID;
 public class CarService {
 
     private final CarRepository carRepository;
-    private final FileRepo fileRepository;
+    private final ImageRepo imageRepository;
     private final CarMapper carMapper;
     private final AmazonS3 amazonS3Client;
     private final AwsS3Config amazonS3Config;
@@ -103,7 +103,7 @@ public class CarService {
                 .fileUrl(savedModel.awsUrl())
                 .name(savedModel.fileName())
                 .build();
-        return fileRepository.save(fileToSave);
+        return imageRepository.save(fileToSave);
     }
 
     private AwsS3SaveImageModel saveImageToAWS(MultipartFile file) {
@@ -213,10 +213,6 @@ public class CarService {
                 .toList();
 
         return new PageImpl<>(carDTOs, PageRequest.of(pageNumber, pageSize), total);
-    }
-
-    public List<String> findDistinctModelsByBrandIgnoreCase(String brand) {
-        return carRepository.findDistinctModelsByBrandIgnoreCase(brand);
     }
 
 }
