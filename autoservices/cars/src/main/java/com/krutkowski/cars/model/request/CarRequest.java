@@ -55,4 +55,8 @@ public class CarRequest {
     @Positive(message = "Engine size must be positive")
     @NotBlank(message = "Engine cannot be empty")
     private String engine;
+
+    @NotBlank(message = "Fuel type cannot be empty")
+    private String fuelType;
+
 }

@@ -65,23 +65,11 @@ public class CarController {
     @PostMapping(value = "/save/images/data", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> saveCarWithImages(
             @RequestPart("car") @Valid CarRequest carRequest,
-            @RequestPart("files") MultipartFile file) {
+            @RequestPart("files") List<MultipartFile> files) {
 
         log.info("Saving car with images{}", carRequest);
-        carService.saveCarWithFiles(carRequest, file);
+        carService.saveCarWithFiles(carRequest, files);
         return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    @PostMapping("/save/images")
-    public ResponseEntity<?> saveImages(@RequestParam("files") List<MultipartFile> files){
-        if (files == null || files.isEmpty()){
-            return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body("File list is empty");
-        }
-        List<File> savedFiles = new ArrayList<>();
-
-        files.forEach(file -> savedFiles.add(carService.saveFile(file)));
-
-        return ResponseEntity.ok(savedFiles);
     }
 
 }

@@ -8,6 +8,7 @@ import com.krutkowski.cars.model.dto.AwsS3SaveImageModel;
 import com.krutkowski.cars.model.dto.CarDTO;
 import com.krutkowski.cars.model.entity.Car;
 import com.krutkowski.cars.model.entity.File;
+import com.krutkowski.cars.model.entity.Image;
 import com.krutkowski.cars.model.mapper.CarMapper;
 import com.krutkowski.cars.model.request.CarRequest;
 import com.krutkowski.cars.repository.CarRepository;
@@ -27,13 +28,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -54,27 +53,6 @@ public class CarService {
                 .brand(carRequest.getBrand())
                 .model(carRequest.getModel())
                 .title(carRequest.getTitle())
-                .image(carRequest.getImage())
-                .price(carRequest.getPrice())
-                .year(carRequest.getYear())
-                .mileage(carRequest.getMileage())
-                .power(carRequest.getPower())
-                .type(carRequest.getType())
-                .location(carRequest.getLocation())
-                .flag(carRequest.getFlag())
-                .color(carRequest.getColor())
-                .engine(carRequest.getEngine())
-                .build();
-        carRepository.save(car);
-    }
-
-    public void saveCar(CarRequest carRequest, String fileUrl) {
-        Car car = Car.builder()
-                .id(carRequest.getId())
-                .brand(carRequest.getBrand())
-                .model(carRequest.getModel())
-                .title(carRequest.getTitle())
-                .image(fileUrl)
                 .price(carRequest.getPrice())
                 .year(carRequest.getYear())
                 .mileage(carRequest.getMileage())
@@ -96,14 +74,45 @@ public class CarService {
         return carMapper.toDto(carRepository.findById(id).orElseThrow());
     }
 
-    public File saveFile(MultipartFile file) {
-        AwsS3SaveImageModel savedModel = saveImageToAWS(file);
+    @Transactional
+    public void saveCarWithFiles(@Valid CarRequest carRequest, List<MultipartFile> files) {
+        Car car = mapCarFromRequest(carRequest);
+        carRepository.save(car);
+        saveImagesForCar(files, car);
+    }
 
-        File fileToSave = File.builder()
-                .fileUrl(savedModel.awsUrl())
-                .name(savedModel.fileName())
+    private Car mapCarFromRequest(@Valid CarRequest carRequest) {
+        return Car.builder()
+                .id(carRequest.getId())
+                .brand(carRequest.getBrand())
+                .model(carRequest.getModel())
+                .title(carRequest.getTitle())
+                .price(carRequest.getPrice())
+                .year(carRequest.getYear())
+                .mileage(carRequest.getMileage())
+                .power(carRequest.getPower())
+                .type(carRequest.getType())
+                .location(carRequest.getLocation())
+                .flag(carRequest.getFlag())
+                .color(carRequest.getColor())
+                .engine(carRequest.getEngine())
+                .fuelType(carRequest.getFuelType())
                 .build();
-        return imageRepository.save(fileToSave);
+    }
+
+    private void saveImagesForCar(List<MultipartFile> files, Car car) {
+        for (MultipartFile file : files) {
+            AwsS3SaveImageModel savedImageToAWS = saveImageToAWS(file);
+            Image imageToSave = Image.builder()
+                    .imageUrl(savedImageToAWS.awsUrl())
+                    .name(savedImageToAWS.fileName())
+                    .created(new Date(System.currentTimeMillis()))
+                    .modified(new Date(System.currentTimeMillis()))
+                    .car(car)
+                    .build();
+
+            imageRepository.save(imageToSave);
+        }
     }
 
     private AwsS3SaveImageModel saveImageToAWS(MultipartFile file) {
@@ -133,16 +142,9 @@ public class CarService {
         }
     }
 
-    public void saveCarWithFiles(@Valid CarRequest carRequest, MultipartFile file) {
-        String fileUrl = saveFile(file).getFileUrl();
-        saveCar(carRequest, fileUrl);
-
-    }
-
     public Page<CarDTO> getFilteredCars(Map<String, String> filters, int pageNumber, int pageSize) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 
-        // Główne zapytanie
         CriteriaQuery<Car> cq = cb.createQuery(Car.class);
         Root<Car> car = cq.from(Car.class);
 
@@ -204,8 +206,8 @@ public class CarService {
         List<Car> carEntities = query.getResultList();
 
         int total = carEntities.size();
-        // Mapowanie encji na DTO
         int first = pageNumber * pageSize;
+
         List<CarDTO> carDTOs = carEntities.stream()
                 .map(carMapper::toDto)
                 .skip(first)

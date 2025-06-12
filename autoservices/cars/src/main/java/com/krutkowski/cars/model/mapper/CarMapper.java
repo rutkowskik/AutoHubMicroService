@@ -1,8 +1,13 @@
 package com.krutkowski.cars.model.mapper;
 
+import com.krutkowski.cars.model.dto.ImageDTO;
 import com.krutkowski.cars.model.entity.Car;
 import com.krutkowski.cars.model.dto.CarDTO;
+import com.krutkowski.cars.model.entity.Image;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class CarMapper {
@@ -22,7 +27,22 @@ public class CarMapper {
                 car.getLocation(),
                 car.getFlag(),
                 car.getColor(),
-                car.getEngine()
+                car.getEngine(),
+                car.getFuelType(),
+                toImageDtoList(car.getImages())
         );
+    }
+
+    private List<ImageDTO> toImageDtoList(List<Image> images) {
+        if (images == null) return List.of();
+
+        return images.stream()
+                .map(image -> ImageDTO.builder()
+                        .name(image.getName())
+                        .imageUrl(image.getImageUrl())
+                        .created(image.getCreated())
+                        .modified(image.getModified())
+                        .build()
+                ).collect(Collectors.toList());
     }
 }

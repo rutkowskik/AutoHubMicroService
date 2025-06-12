@@ -2,6 +2,7 @@ package com.krutkowski.cars.model.dto;
 
 
 import java.math.BigDecimal;
+import java.util.List;
 
 
 public record CarDTO(
@@ -18,6 +19,8 @@ public record CarDTO(
         String location,
         String flag,
         String color,
-        String engine
+        String engine,
+        String fuelType,
+        List<ImageDTO> images
 ) {
 }
