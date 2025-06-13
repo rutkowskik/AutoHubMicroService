@@ -22,5 +22,5 @@ public interface CarRepository extends JpaRepository<Car, Long> {
             json_agg(DISTINCT fuel_type)
         FROM car
         """, nativeQuery = true)
-    Object[] getCarFiltersMetaRaw();
+    List<Object[]> getCarFiltersMetaRaw();
 }

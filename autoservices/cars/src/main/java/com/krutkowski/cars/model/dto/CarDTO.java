@@ -10,7 +10,7 @@ public record CarDTO(
         String brand,
         String model,
         String title,
-        String image,
+        String mainImage,
         BigDecimal price,
         int year,
         int mileage,

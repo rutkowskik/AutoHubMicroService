@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -40,7 +41,9 @@ class CarFiltersMetaServiceTest {
         String colorsJson = "[\"Black\",\"White\"]";
         String fuelsJson = "[\"Diesel\",\"Petrol\"]";
 
-        Object[] queryResult = {brandsJson, originsJson, bodiesJson, colorsJson, fuelsJson};
+        Object[] queryRow = {brandsJson, originsJson, bodiesJson, colorsJson, fuelsJson};
+        List<Object[]> queryResult = new ArrayList<>();
+        queryResult.add(queryRow);
 
         when(carRepository.getCarFiltersMetaRaw()).thenReturn(queryResult);
 

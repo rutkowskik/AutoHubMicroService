@@ -18,7 +18,7 @@ public class CarMapper {
                 car.getBrand(),
                 car.getModel(),
                 car.getTitle(),
-                car.getImage(),
+                getMainImageUrl(car.getImages()),
                 car.getPrice(),
                 car.getYear(),
                 car.getMileage(),
@@ -44,5 +44,14 @@ public class CarMapper {
                         .modified(image.getModified())
                         .build()
                 ).collect(Collectors.toList());
+    }
+
+
+    private String getMainImageUrl(List<Image> images) {
+        return images.stream()
+                .filter(Image::getIsMainImage)
+                .findFirst()
+                .map(Image::getImageUrl)
+                .orElse(images.isEmpty() ? null : images.get(0).getImageUrl());
     }
 }

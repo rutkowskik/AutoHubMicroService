@@ -25,8 +25,6 @@ public class CarRequest {
     @NotBlank(message = "Title cannot be empty")
     private String title;
 
-    private String image;
-
     @DecimalMin(value = "0.01")
     @Digits(integer = 10, fraction = 2)
     @NotNull(message = "Price cannot be empty")

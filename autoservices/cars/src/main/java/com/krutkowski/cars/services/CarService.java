@@ -7,7 +7,6 @@ import com.krutkowski.cars.config.AwsS3Config;
 import com.krutkowski.cars.model.dto.AwsS3SaveImageModel;
 import com.krutkowski.cars.model.dto.CarDTO;
 import com.krutkowski.cars.model.entity.Car;
-import com.krutkowski.cars.model.entity.File;
 import com.krutkowski.cars.model.entity.Image;
 import com.krutkowski.cars.model.mapper.CarMapper;
 import com.krutkowski.cars.model.request.CarRequest;
@@ -78,6 +77,7 @@ public class CarService {
     public void saveCarWithFiles(@Valid CarRequest carRequest, List<MultipartFile> files) {
         Car car = mapCarFromRequest(carRequest);
         carRepository.save(car);
+        clearMainImageFlag(car);
         saveImagesForCar(files, car);
     }
 
@@ -100,8 +100,18 @@ public class CarService {
                 .build();
     }
 
+    private void clearMainImageFlag(Car car) {
+        List<Image> mainImages = imageRepository.findAllByCarAndIsMainImageTrue(car);
+        for (Image image : mainImages) {
+            image.setIsMainImage(false);
+        }
+
+        imageRepository.saveAll(mainImages);
+    }
+
     private void saveImagesForCar(List<MultipartFile> files, Car car) {
-        for (MultipartFile file : files) {
+        for (int i = 0; i < files.size(); i++) {
+            MultipartFile file = files.get(i);
             AwsS3SaveImageModel savedImageToAWS = saveImageToAWS(file);
             Image imageToSave = Image.builder()
                     .imageUrl(savedImageToAWS.awsUrl())
@@ -109,6 +119,7 @@ public class CarService {
                     .created(new Date(System.currentTimeMillis()))
                     .modified(new Date(System.currentTimeMillis()))
                     .car(car)
+                    .isMainImage(i == 0)
                     .build();
 
             imageRepository.save(imageToSave);

@@ -1,6 +1,7 @@
 package com.krutkowski.cars.model.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,6 +25,7 @@ public class Image {
     private String imageUrl;
     private Date created;
     private Date modified;
+    private Boolean isMainImage;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "car_id", nullable = false)

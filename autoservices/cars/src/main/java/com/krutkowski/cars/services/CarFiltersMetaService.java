@@ -19,15 +19,16 @@ public class CarFiltersMetaService {
     private final ObjectMapper objectMapper;
 
     public Map<String, List<String>> getFiltersMeta() {
-        Object[] result = carRepository.getCarFiltersMetaRaw();
+        List<Object[]> rawResult = carRepository.getCarFiltersMetaRaw();
+        Object[] result = rawResult.get(0);
 
         try {
             Map<String, List<String>> filters = new HashMap<>();
-            filters.put("brands", objectMapper.readValue(result[0].toString(), new TypeReference<>() {}));
-            filters.put("originCountries", objectMapper.readValue(result[1].toString(), new TypeReference<>() {}));
-            filters.put("bodyTypes", objectMapper.readValue(result[2].toString(), new TypeReference<>() {}));
-            filters.put("colors", objectMapper.readValue(result[3].toString(), new TypeReference<>() {}));
-            filters.put("fuelTypes", objectMapper.readValue(result[4].toString(), new TypeReference<>() {}));
+            filters.put("brands", objectMapper.readValue((String) result[0], new TypeReference<>() {}));
+            filters.put("originCountries", objectMapper.readValue((String) result[1], new TypeReference<>() {}));
+            filters.put("bodyTypes", objectMapper.readValue((String) result[2], new TypeReference<>() {}));
+            filters.put("colors", objectMapper.readValue((String) result[3], new TypeReference<>() {}));
+            filters.put("fuelTypes", objectMapper.readValue((String) result[4], new TypeReference<>() {}));
             return filters;
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("Failed to parse filters JSON", e);

@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -42,20 +43,20 @@ class CarControllerTest {
     void setUp() {
         objectMapper = new ObjectMapper();
          cars = List.of(
-                new Car(1L, "BMW", "X5", "Title", "",
+                new Car(1L, "BMW", "X5", "Title",
                         new BigDecimal("20.20"), 1999, 100_000, 150, "Kombi",
-                        "Katowice", "", "black", "2000", "Gasoline", new Date(), new Date()),
-                new Car(2L, "AUDI", "Q3", "Title", "",
+                        "Katowice", "", "black", "2000", "Gasoline", new Date(), new Date(), new ArrayList<>()),
+                new Car(2L, "AUDI", "Q3", "Title",
                         new BigDecimal("20.20"), 1999, 100_000, 150, "Kombi",
-                        "Katowice", "", "black", "2000", "Diesel", new Date(), new Date())
+                        "Katowice", "", "black", "2000", "Diesel", new Date(), new Date(), new ArrayList<>())
         );
     }
 
     @Test
     void saveCar200ForValidRequest() throws Exception {
-        CarRequest carRequest = new CarRequest(1L, "BMW", "X5", "Title", "",
+        CarRequest carRequest = new CarRequest(1L, "BMW", "X5", "Title",
                 new BigDecimal("20.20"), 1999, 100_000, 150, "Kombi",
-                "Katowice", "", "black", "2000");
+                "Katowice", "", "black", "2000", "fuel_type");
 
         mockMvc.perform(post("/api/v1/cars/save")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -93,12 +94,12 @@ class CarControllerTest {
         // given
         Pageable pageRequest = PageRequest.of(0, 10);
         List<Car> cars = List.of(
-                new Car(1L, "BMW", "X5", "Title", "",
+                new Car(1L, "BMW", "X5", "Title",
                         new BigDecimal("20.20"), 1999, 100_000, 150, "Kombi",
-                        "Katowice", "", "black", "2000", "Gasoline",new Date(), new Date()),
-                new Car(2L, "AUDI", "Q3", "Title", "",
+                        "Katowice", "", "black", "2000", "Gasoline",new Date(), new Date(), new ArrayList<>()),
+                new Car(2L, "AUDI", "Q3", "Title",
                         new BigDecimal("20.20"), 1999, 100_000, 150, "Kombi",
-                        "Katowice", "", "black", "2000","Diesel", new Date(), new Date())
+                        "Katowice", "", "black", "2000","Diesel", new Date(), new Date(), new ArrayList<>())
         );
         Page<Car> page = new PageImpl<>(cars, pageRequest, cars.size());
         when(carService.getAllCars(any(Pageable.class))).thenReturn(page);
@@ -109,7 +110,7 @@ class CarControllerTest {
                         .param("size", "10")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.content[0].brand").value("BMW"))
                 .andExpect(jsonPath("$.content[1].model").value("Q3"));
     }

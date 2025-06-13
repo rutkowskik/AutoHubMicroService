@@ -42,8 +42,6 @@ public class Car {
     @Size(min = 1, max = 100, message = "Title name must be between 1 and 100 characters.")
     private String title;
 
-    private String image;
-
     @NotNull(message = "Price is required.")
     @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0.")
     private BigDecimal price;
