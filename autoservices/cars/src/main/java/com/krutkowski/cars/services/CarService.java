@@ -25,7 +25,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -63,10 +62,6 @@ public class CarService {
                 .engine(carRequest.getEngine())
                 .build();
         carRepository.save(car);
-    }
-
-    public Page<Car> getAllCars(Pageable page) {
-        return carRepository.findAll(page);
     }
 
     public CarDTO getCarById(Long id) {
@@ -227,5 +222,4 @@ public class CarService {
 
         return new PageImpl<>(carDTOs, PageRequest.of(pageNumber, pageSize), total);
     }
-
 }

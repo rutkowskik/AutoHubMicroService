@@ -34,7 +34,7 @@ public class CarController {
 
     //todo implement active_state not the delete method
 
-    @GetMapping()
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public Page<CarDTO> getAllCars(
             @RequestParam Map<String, String> filters,
             @RequestParam ("page") int page,

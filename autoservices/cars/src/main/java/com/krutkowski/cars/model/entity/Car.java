@@ -1,5 +1,6 @@
 package com.krutkowski.cars.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
@@ -84,6 +85,7 @@ public class Car {
     //todo active status
 
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Image> images = new ArrayList<>();
 }
 
