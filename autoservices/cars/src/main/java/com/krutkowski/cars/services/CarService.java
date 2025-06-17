@@ -70,29 +70,10 @@ public class CarService {
 
     @Transactional
     public void saveCarWithFiles(@Valid CarRequest carRequest, List<MultipartFile> files) {
-        Car car = mapCarFromRequest(carRequest);
+        Car car = carMapper.mapCarFromRequest(carRequest);
         carRepository.save(car);
         clearMainImageFlag(car);
         saveImagesForCar(files, car);
-    }
-
-    private Car mapCarFromRequest(@Valid CarRequest carRequest) {
-        return Car.builder()
-                .id(carRequest.getId())
-                .brand(carRequest.getBrand())
-                .model(carRequest.getModel())
-                .title(carRequest.getTitle())
-                .price(carRequest.getPrice())
-                .year(carRequest.getYear())
-                .mileage(carRequest.getMileage())
-                .power(carRequest.getPower())
-                .type(carRequest.getType())
-                .location(carRequest.getLocation())
-                .flag(carRequest.getFlag())
-                .color(carRequest.getColor())
-                .engine(carRequest.getEngine())
-                .fuelType(carRequest.getFuelType())
-                .build();
     }
 
     private void clearMainImageFlag(Car car) {
