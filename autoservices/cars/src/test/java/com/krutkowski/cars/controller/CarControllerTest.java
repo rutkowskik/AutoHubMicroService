@@ -39,6 +39,7 @@ class CarControllerTest {
 
     private ObjectMapper objectMapper;
     List<Car> cars;
+    CarMapper carMapper;
 
     @BeforeEach
     void setUp() {
@@ -51,6 +52,8 @@ class CarControllerTest {
                         new BigDecimal("20.20"), 1999, 100_000, 150, "Kombi",
                         "Katowice", "", "black", "2000", "Diesel", new Date(), new Date(), new ArrayList<>())
         );
+
+        carMapper = new CarMapper();
     }
 
     @Test
@@ -81,20 +84,9 @@ class CarControllerTest {
 
     @Test
     void shouldReturnAllCars() throws Exception {
-        // given
-        List<Car> cars = List.of(
-                new Car(1L, "BMW", "X5", "Title",
-                        new BigDecimal("20.20"), 1999, 100_000, 150, "Kombi",
-                        "Katowice", "", "black", "2000", "Gasoline",new Date(), new Date(), new ArrayList<>()),
-                new Car(2L, "AUDI", "Q3", "Title",
-                        new BigDecimal("20.20"), 1999, 100_000, 150, "Kombi",
-                        "Katowice", "", "black", "2000","Diesel", new Date(), new Date(), new ArrayList<>())
-        );
-        CarMapper carMapper = new CarMapper();
-        List<CarDTO> DTOs = cars.stream().map(carMapper::toDto).collect(Collectors.toList());
-        Page<CarDTO> page = new PageImpl<>(DTOs);
+        List<CarDTO> carsDto = cars.stream().map(carMapper::toDto).collect(Collectors.toList());
+        Page<CarDTO> page = new PageImpl<>(carsDto);
         when(carService.getFilteredCars(anyMap(), eq(0), eq(10))).thenReturn(page);
-
 
         mockMvc.perform(get("/api/v1/cars")
                         .param("page", "0")
@@ -114,7 +106,7 @@ class CarControllerTest {
                 new BigDecimal("25.00"), 2005, 120_000, 160, "SUV",
                 "Warszawa", "", "white", "2500", "Diesel");
 
-        mockMvc.perform(post("/api/v1/cars/save")
+        mockMvc.perform(put("/api/v1/cars/update")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(carRequest)))
                 .andExpect(status().isOk());
@@ -127,7 +119,7 @@ class CarControllerTest {
         Long carId = 2L;
         CarRequest emptyRequest = new CarRequest(); // pusty request
 
-        mockMvc.perform(put("/api/v1/cars/{id}", carId)
+        mockMvc.perform(put("/api/v1/cars/update", carId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(emptyRequest)))
                 .andExpect(status().isBadRequest());
