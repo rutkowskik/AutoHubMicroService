@@ -1,0 +1,39 @@
+server:
+  port: 8080
+
+spring:
+  mvc:
+    contentnegotiation:
+      favor-parameter: true
+  jackson:
+    default-property-inclusion: non_null
+  datasource:
+    username: 'carapp'
+    url: url
+    password: PASS
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: 'true'
+    hibernate:
+      ddl-auto: update
+    show-sql: 'true'
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql: TRACE
+
+
+amazon:
+  aws:
+    access-key-id: id
+    access-key-secret: key
+  s3:
+    bucket: todo
+    region: todo
+multipart.maxFileSize: 5MB
+multipart.maxRequestSize: 5MB
+
+
