@@ -1,23 +1,18 @@
 package com.krutkowski.cars.controller;
 
-import com.krutkowski.cars.model.entity.Car;
 import com.krutkowski.cars.model.dto.CarDTO;
-import com.krutkowski.cars.model.entity.File;
 import com.krutkowski.cars.model.request.CarRequest;
 import com.krutkowski.cars.services.CarService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
