@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: apigateway
+  profiles:
+    active: dev
+  config:
+    import: classpath:config/${spring.profiles.active}/application.yaml
