@@ -20,7 +20,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("api/v1/cars")
 @AllArgsConstructor
-@CrossOrigin(origins = "http://autohub.kacper.com:3000")
 public class CarController {
 
     private CarService carService;
